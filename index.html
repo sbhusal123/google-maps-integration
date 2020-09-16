@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            html,body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            #map {
+                height: 100%;
+            }
+        </style>
+    </head>
+    <body>
+            <div id="map"></div>
+    </body>
+    <!-- Place the api below -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_HERE&callback=initMap&libraries=&v=weekly" defer></script>
+    <script>
+        "use strict";
+        
+        var map;
+        var infoWindow;
+        var marker;
+        var geocoder;
+        
+        function initMap() {
+            // Info windows allows to show pop up on clicking, dragging and other event
+            infoWindow = new google.maps.InfoWindow();
+        
+            // Geocoder for translating lat long to address and reverse
+            geocoder = new google.maps.Geocoder();
+            
+            // If browser supports the GPS locationing
+            if (navigator.geolocation) {
+            var currentPosition;
+        
+            navigator.geolocation.getCurrentPosition(function(position){
+                // Current Position
+                currentPosition = {lat: position.coords.latitude, lng: position.coords.longitude};
+        
+                // Map Options
+                var options = {
+                    center: currentPosition,
+                    zoom: 18,
+                    scrollwheel: false,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
+        
+                // Initialize map
+                map = new google.maps.Map(document.getElementById("map"), options);
+        
+                addMarker(currentPosition, 'Default Marker');
+        
+            });
+        
+        } else {
+            console.log("Geolocation is not supported by this browser.");
+        }
+        }
+        
+        
+        function handleEvent(event) {
+            infoWindow.setContent(`Lat: ${event.latLng.lat()} <br> Long: ${event.latLng.lng()}`);
+            infoWindow.open(map, marker);
+        }
+        
+        // Add Marker to the Map: No multiple marker support
+        function addMarker(latlng, title) {
+            // Initialize marker
+            marker = new google.maps.Marker({
+                    position: latlng,
+                    map: map,
+                    title: title,
+                    draggable:true
+            });
+        
+            // Add event handler on dragging and clicking marker
+            marker.addListener('click', handleEvent);
+            marker.addListener('dragend', handleEvent);
+        }
+    
+    </script>    
+</html>
